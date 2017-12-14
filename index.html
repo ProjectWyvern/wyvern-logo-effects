@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wyvern Logo Effects</title>
+  <style>
+  html, body { height: 100%; width: 100%; padding: 0px; margin: 0px; overflow: hidden; background: #000; }
+  #container { height: 100%; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <img src="static/logo.svg" id="logo" style="display: none; height: 100%; width: 100%;" />
+	<script src="static/seriously.js"></script>
+	<script src="static/effects/seriously.vignette.js"></script>
+	<script>
+  var canvas = document.createElement('canvas');
+  canvas.id = 'canvas';
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  document.getElementById('container').appendChild(canvas);
+  var seriously = new Seriously();
+  var logo = seriously.source('#logo');
+  var target = seriously.target('#canvas');
+  var vignette = seriously.effect('vignette');
+  vignette.amount = 1;
+  vignette.source = logo;
+  var mask = seriously.transform();
+  mask.source = vignette;
+  target.source = mask;
+  var factor = 1;
+  var diff = 0; 
+  function setPosition(x, y) {
+    x -= canvas.offsetLeft;
+    y -= canvas.offsetTop;
+    var xd = Math.abs(x - (canvas.width / 2)) / canvas.width;
+    var yd = Math.abs(y - (canvas.height / 2)) / canvas.height;
+    diff = xd + yd;
+  }
+  function mouseMove(e) { setPosition(e.pageX, e.pageY); } 
+  window.addEventListener('mousemove', mouseMove, false);
+  var amt = 0.5;  
+  var del = 200;
+  mouseMove({pageX: 0, pageY: 0})
+  seriously.go(function(now) {
+    factor = amt + (Math.sin(now / del) / Math.PI / 8);
+    vignette.amount = factor * 100 * diff;
+  });
+	</script>
+</body>
+</html>
